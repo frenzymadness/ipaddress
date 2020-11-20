@@ -426,6 +426,15 @@ class AddressTestCase_v6(BaseTestCase, CommonTestMixin_v6):
 class NetmaskTestMixin_v4(CommonTestMixin_v4):
     """Input validation on interfaces and networks is very similar"""
 
+    def test_no_mask(self):
+        for address in ('1.2.3.4', 0x01020304, b'\x01\x02\x03\x04'):
+            net = self.factory(address)
+            self.assertEqual(_compat_str(net), '1.2.3.4/32')
+            self.assertEqual(_compat_str(net.netmask), '255.255.255.255')
+            self.assertEqual(_compat_str(net.hostmask), '0.0.0.0')
+            # IPv4Network has prefixlen, but IPv4Interface doesn't.
+            # Should we add it to IPv4Interface too? (bpo-36392)
+
     def test_split_netmask(self):
         addr = "1.2.3.4/32/24"
         with self.assertAddressError("Only one '/' permitted in %r" % addr):
@@ -562,6 +571,18 @@ class NetworkTestCase_v4(BaseTestCase, NetmaskTestMixin_v4):
 
 class NetmaskTestMixin_v6(CommonTestMixin_v6):
     """Input validation on interfaces and networks is very similar"""
+
+    def test_no_mask(self):
+        for address in ('::1', 1, b'\x00'*15 + b'\x01'):
+            net = self.factory(address)
+            self.assertEqual(_compat_str(net), '::1/128')
+            self.assertEqual(
+                _compat_str(net.netmask),
+                'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'
+            )
+            self.assertEqual(_compat_str(net.hostmask), '::')
+            # IPv6Network has prefixlen, but IPv6Interface doesn't.
+            # Should we add it to IPv4Interface too? (bpo-36392)
 
     def test_split_netmask(self):
         addr = "cafe:cafe::/128/190"
