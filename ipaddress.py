@@ -1503,7 +1503,7 @@ class IPv4Interface(IPv4Address):
 
     def __str__(self):
         return '%s/%d' % (self._string_from_ip_int(self._ip),
-                          self.network.prefixlen)
+                          self._prefixlen)
 
     def __eq__(self, other):
         address_equal = IPv4Address.__eq__(self, other)
@@ -2178,7 +2178,7 @@ class IPv6Interface(IPv6Address):
 
     def __str__(self):
         return '%s/%d' % (self._string_from_ip_int(self._ip),
-                          self.network.prefixlen)
+                          self._prefixlen)
 
     def __eq__(self, other):
         address_equal = IPv6Address.__eq__(self, other)
